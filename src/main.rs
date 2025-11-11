@@ -115,43 +115,33 @@ enum Message {
     SaveFile,
 }
 
-
-
 fn open_file() -> Task<Message> {
     Task::future(
         rfd::AsyncFileDialog::new()
             .pick_file(),
     ).then(|handle| {
         match handle {
-            Some(file_handle) => Task::perform(load_input_file(file_handle), |result| Message::InputChanged(result)),
+            Some(file_handle) => Task::perform(get_file_path(file_handle), |result| Message::InputChanged(result)),
             None => Task::done(Message::FileCancelled),
         }
     })
 
 }
-
-async fn load_input_file(file_handle: FileHandle) -> String {
-    match Some(file_handle.path()) {
-        Some(path) => path.to_string_lossy().to_string(),
-        None => String::new(), // fallback if path is unavailable
-    }
-}
-
 
 fn save_file() -> Task<Message> {
     Task::future(
         rfd::AsyncFileDialog::new()
-            .set_file_name("build info.txt")
+            .set_file_name("")
             .save_file(),
     ).then(|handle| {
         match handle{
-            Some(file_handle) => Task::perform(save_output_file(file_handle), |result| Message::OutputChanged(result)),
+            Some(file_handle) => Task::perform(get_file_path(file_handle), |result| Message::OutputChanged(result)),
             None => Task::done(Message::FileCancelled),
         }
     })
 }
 
-async fn save_output_file(file_handle: FileHandle) -> String {
+async fn get_file_path(file_handle: FileHandle) -> String {
     match Some(file_handle.path()) {
         Some(path) => path.to_string_lossy().to_string(),
         None => String::new(), // fallback if path is unavailable
