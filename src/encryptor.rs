@@ -3,25 +3,17 @@ use std::io;
 use std::fs::File;
 use std::thread;
 use std::sync::Arc;
+use std::hash::{DefaultHasher, Hash, Hasher};
 //use std::time::{Instant, Duration};
 use rand::{SeedableRng, RngCore};
 use rand_chacha::ChaCha20Rng;
 use io_at::{ReadAt, WriteAt};
 //use indicatif::{ProgressBar, ProgressStyle};
 
-fn hash_string(in_string: &str) -> u64 {
-
-    let mut hash_value: u64 = 0;
-    let prime = 131;
-
-    for c in in_string.bytes() {
-        if hash_value > 9_223_372_036_854_775_808 {
-            hash_value /= 2;
-        }
-        hash_value += (c as u16 * prime) as u64;
-    }
-
-    hash_value
+fn hash_string(my_string: &str) -> u64 {
+    let mut s = DefaultHasher::new();
+    my_string.hash(&mut s);
+    s.finish()
 }
 
 pub struct Encryptor{
