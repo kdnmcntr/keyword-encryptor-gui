@@ -75,7 +75,8 @@ impl Encryptor {
                         let rand_data_array = rand_data.to_be_bytes();
                         for k in 0..num_bytes_read {
                             let new_data = buffer[k] ^ rand_data_array[k];
-                            output_file_clone.as_ref().write_at(&buffer, (segment_size * i) + (j * 8) + (k as u64)).unwrap();
+                            let new_buff = [new_data];
+                            output_file_clone.as_ref().write_at(&new_buff, (segment_size * i) + (j * 8) + (k as u64)).unwrap();
                         }
                     }
 
